@@ -1,6 +1,6 @@
 {
   "name": "@rtk-devtools/core",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Framework-agnostic core engine for RTK Devtools",
   "author": "Ender Bonnet (@enBonnet)",
   "license": "MIT",
