@@ -1,6 +1,6 @@
-import { configureStore } from '@reduxjs/toolkit'
-import { createDevtoolsMiddleware } from '@rtk-devtools/core'
-import { api } from './api'
+import { configureStore } from "@reduxjs/toolkit";
+import { createDevtoolsMiddleware } from "@rtk-devtools/core";
+import { api } from "./api";
 
 export const store = configureStore({
   reducer: {
@@ -10,7 +10,7 @@ export const store = configureStore({
     getDefaultMiddleware()
       .concat(api.middleware)
       .concat(createDevtoolsMiddleware({ api })),
-})
+});
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

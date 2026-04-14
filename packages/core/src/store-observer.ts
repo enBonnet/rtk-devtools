@@ -10,69 +10,71 @@ import type {
   TagDescription,
   QueryStatus,
   EventRecorderInstance,
-} from './types'
-import { buildTagGraph } from './tag-graph'
-import { createCacheTimerTracker } from './cache-timer-tracker'
-import type { Store } from 'redux'
+} from "./types";
+import { buildTagGraph } from "./tag-graph";
+import { createCacheTimerTracker } from "./cache-timer-tracker";
+import type { Store } from "redux";
 
 export interface StoreObserverConfig {
-  api: RTKQueryApi
-  store: Store
-  recorder: EventRecorderInstance
-  throttleMs?: number
+  api: RTKQueryApi;
+  store: Store;
+  recorder: EventRecorderInstance;
+  throttleMs?: number;
 }
 
 export function createStoreObserver(config: StoreObserverConfig) {
-  const { api, store, recorder, throttleMs = 100 } = config
-  const { reducerPath } = api
+  const { api, store, recorder, throttleMs = 100 } = config;
+  const { reducerPath } = api;
 
-  const listeners = new Set<(snapshot: DevtoolsSnapshot) => void>()
-  const cacheTimerTracker = createCacheTimerTracker(getDefaultKeepUnusedDataFor())
+  const listeners = new Set<(snapshot: DevtoolsSnapshot) => void>();
+  const cacheTimerTracker = createCacheTimerTracker(
+    getDefaultKeepUnusedDataFor(),
+  );
 
-  let unsubscribe: (() => void) | null = null
-  let prevApiState: RTKQueryState | null = null
-  let currentSnapshot: DevtoolsSnapshot = createEmptySnapshot()
-  let throttleTimer: ReturnType<typeof setTimeout> | null = null
-  let pendingUpdate = false
+  let unsubscribe: (() => void) | null = null;
+  let prevApiState: RTKQueryState | null = null;
+  let currentSnapshot: DevtoolsSnapshot = createEmptySnapshot();
+  let throttleTimer: ReturnType<typeof setTimeout> | null = null;
+  let pendingUpdate = false;
 
   function getDefaultKeepUnusedDataFor(): number {
     try {
-      const state = store.getState()
-      const apiState = state[reducerPath] as RTKQueryState | undefined
-      return apiState?.config?.keepUnusedDataFor ?? 60
+      const state = store.getState();
+      const apiState = state[reducerPath] as RTKQueryState | undefined;
+      return apiState?.config?.keepUnusedDataFor ?? 60;
     } catch {
-      return 60
+      return 60;
     }
   }
 
   function getApiState(): RTKQueryState | undefined {
     try {
-      const state = store.getState()
-      return state[reducerPath] as RTKQueryState | undefined
+      const state = store.getState();
+      return state[reducerPath] as RTKQueryState | undefined;
     } catch {
-      return undefined
+      return undefined;
     }
   }
 
   function computeSnapshot(apiState: RTKQueryState): DevtoolsSnapshot {
-    const queries = extractQueries(apiState)
-    const mutations = extractMutations(apiState)
-    const tagGraph = buildTagGraph(apiState, api)
-    const timeline = recorder.getEvents()
-    const stats = computeStats(queries, mutations, apiState)
+    const queries = extractQueries(apiState);
+    const mutations = extractMutations(apiState);
+    const tagGraph = buildTagGraph(apiState, api);
+    const timeline = recorder.getEvents();
+    const stats = computeStats(queries, mutations, apiState);
 
     // Update cache timer tracker
-    const subscriberCounts = new Map<string, number>()
-    const endpointNames = new Map<string, string>()
+    const subscriberCounts = new Map<string, number>();
+    const endpointNames = new Map<string, string>();
     for (const [key, entry] of queries) {
-      subscriberCounts.set(key, entry.subscriberCount)
-      endpointNames.set(key, entry.endpointName)
+      subscriberCounts.set(key, entry.subscriberCount);
+      endpointNames.set(key, entry.endpointName);
     }
-    cacheTimerTracker.update(subscriberCounts, endpointNames)
+    cacheTimerTracker.update(subscriberCounts, endpointNames);
 
     // Enrich queries with cache lifetime
     for (const [key, entry] of queries) {
-      entry.cacheLifetimeRemaining = cacheTimerTracker.getRemaining(key)
+      entry.cacheLifetimeRemaining = cacheTimerTracker.getRemaining(key);
     }
 
     return {
@@ -82,19 +84,21 @@ export function createStoreObserver(config: StoreObserverConfig) {
       timeline,
       stats,
       timestamp: Date.now(),
-    }
+    };
   }
 
-  function extractQueries(apiState: RTKQueryState): Map<string, DevtoolsQueryEntry> {
-    const result = new Map<string, DevtoolsQueryEntry>()
+  function extractQueries(
+    apiState: RTKQueryState,
+  ): Map<string, DevtoolsQueryEntry> {
+    const result = new Map<string, DevtoolsQueryEntry>();
 
     for (const [cacheKey, entry] of Object.entries(apiState.queries)) {
-      if (!entry) continue
+      if (!entry) continue;
 
-      const subscriberCount = countSubscribers(apiState, cacheKey)
-      const providedTags = getProvidedTagsForCacheKey(apiState, cacheKey)
-      const pollingInterval = getPollingInterval(apiState, cacheKey)
-      const duration = computeDuration(entry)
+      const subscriberCount = countSubscribers(apiState, cacheKey);
+      const providedTags = getProvidedTagsForCacheKey(apiState, cacheKey);
+      const pollingInterval = getPollingInterval(apiState, cacheKey);
+      const duration = computeDuration(entry);
 
       result.set(cacheKey, {
         cacheKey,
@@ -112,23 +116,25 @@ export function createStoreObserver(config: StoreObserverConfig) {
         isStale: false, // Updated by timeline events
         cacheLifetimeRemaining: null, // Updated by cache timer tracker
         pollingInterval,
-      })
+      });
     }
 
-    return result
+    return result;
   }
 
-  function extractMutations(apiState: RTKQueryState): Map<string, DevtoolsMutationEntry> {
-    const result = new Map<string, DevtoolsMutationEntry>()
+  function extractMutations(
+    apiState: RTKQueryState,
+  ): Map<string, DevtoolsMutationEntry> {
+    const result = new Map<string, DevtoolsMutationEntry>();
 
     for (const [id, entry] of Object.entries(apiState.mutations)) {
-      if (!entry) continue
+      if (!entry) continue;
 
-      const duration = computeDuration(entry)
+      const duration = computeDuration(entry);
 
       result.set(id, {
         id,
-        endpointName: entry.endpointName ?? '',
+        endpointName: entry.endpointName ?? "",
         status: entry.status as QueryStatus,
         originalArgs: entry.originalArgs,
         data: entry.data,
@@ -137,61 +143,64 @@ export function createStoreObserver(config: StoreObserverConfig) {
         fulfilledTimeStamp: entry.fulfilledTimeStamp,
         duration,
         invalidatedTags: [], // Populated from timeline events
-      })
+      });
     }
 
-    return result
+    return result;
   }
 
   function countSubscribers(apiState: RTKQueryState, cacheKey: string): number {
-    const subs = apiState.subscriptions[cacheKey]
-    if (!subs) return 0
-    return Object.keys(subs).length
+    const subs = apiState.subscriptions[cacheKey];
+    if (!subs) return 0;
+    return Object.keys(subs).length;
   }
 
   function getProvidedTagsForCacheKey(
     apiState: RTKQueryState,
     cacheKey: string,
   ): TagDescription[] {
-    const tags: TagDescription[] = []
+    const tags: TagDescription[] = [];
     for (const [tagType, tagIdMap] of Object.entries(apiState.provided)) {
       for (const [tagId, cacheKeys] of Object.entries(tagIdMap)) {
         if (cacheKeys.includes(cacheKey)) {
           tags.push(
-            tagId === '__internal_without_id'
+            tagId === "__internal_without_id"
               ? { type: tagType }
               : { type: tagType, id: parseTagId(tagId) },
-          )
+          );
         }
       }
     }
-    return tags
+    return tags;
   }
 
-  function getPollingInterval(apiState: RTKQueryState, cacheKey: string): number | undefined {
-    const subs = apiState.subscriptions[cacheKey]
-    if (!subs) return undefined
+  function getPollingInterval(
+    apiState: RTKQueryState,
+    cacheKey: string,
+  ): number | undefined {
+    const subs = apiState.subscriptions[cacheKey];
+    if (!subs) return undefined;
 
-    let minInterval: number | undefined
+    let minInterval: number | undefined;
 
     for (const sub of Object.values(subs)) {
       if (sub.pollingInterval && sub.pollingInterval > 0) {
         if (minInterval === undefined || sub.pollingInterval < minInterval) {
-          minInterval = sub.pollingInterval
+          minInterval = sub.pollingInterval;
         }
       }
     }
 
-    return minInterval
+    return minInterval;
   }
 
   function computeDuration(
     entry: RTKQueryCacheEntry | RTKMutationCacheEntry,
   ): number | undefined {
     if (entry.startedTimeStamp && entry.fulfilledTimeStamp) {
-      return entry.fulfilledTimeStamp - entry.startedTimeStamp
+      return entry.fulfilledTimeStamp - entry.startedTimeStamp;
     }
-    return undefined
+    return undefined;
   }
 
   function computeStats(
@@ -199,24 +208,24 @@ export function createStoreObserver(config: StoreObserverConfig) {
     mutations: Map<string, DevtoolsMutationEntry>,
     apiState: RTKQueryState,
   ): DevtoolsStats {
-    let activeQueries = 0
-    let pendingQueries = 0
-    let errorQueries = 0
+    let activeQueries = 0;
+    let pendingQueries = 0;
+    let errorQueries = 0;
 
     for (const entry of queries.values()) {
-      if (entry.subscriberCount > 0) activeQueries++
-      if (entry.status === 'pending') pendingQueries++
-      if (entry.status === 'rejected') errorQueries++
+      if (entry.subscriberCount > 0) activeQueries++;
+      if (entry.status === "pending") pendingQueries++;
+      if (entry.status === "rejected") errorQueries++;
     }
 
-    let pendingMutations = 0
+    let pendingMutations = 0;
     for (const entry of mutations.values()) {
-      if (entry.status === 'pending') pendingMutations++
+      if (entry.status === "pending") pendingMutations++;
     }
 
-    let totalSubscriptions = 0
+    let totalSubscriptions = 0;
     for (const subs of Object.values(apiState.subscriptions)) {
-      if (subs) totalSubscriptions += Object.keys(subs).length
+      if (subs) totalSubscriptions += Object.keys(subs).length;
     }
 
     return {
@@ -227,29 +236,29 @@ export function createStoreObserver(config: StoreObserverConfig) {
       totalMutations: mutations.size,
       pendingMutations,
       totalSubscriptions,
-    }
+    };
   }
 
   function handleStoreChange(): void {
     if (throttleTimer) {
-      pendingUpdate = true
-      return
+      pendingUpdate = true;
+      return;
     }
 
-    performUpdate()
+    performUpdate();
 
     throttleTimer = setTimeout(() => {
-      throttleTimer = null
+      throttleTimer = null;
       if (pendingUpdate) {
-        pendingUpdate = false
-        performUpdate()
+        pendingUpdate = false;
+        performUpdate();
       }
-    }, throttleMs)
+    }, throttleMs);
   }
 
   function performUpdate(): void {
-    const apiState = getApiState()
-    if (!apiState) return
+    const apiState = getApiState();
+    if (!apiState) return;
 
     // Shallow comparison: skip if no RTK Query state slice changed
     if (
@@ -259,50 +268,52 @@ export function createStoreObserver(config: StoreObserverConfig) {
       prevApiState.provided === apiState.provided &&
       prevApiState.subscriptions === apiState.subscriptions
     ) {
-      return
+      return;
     }
 
-    prevApiState = apiState
-    currentSnapshot = computeSnapshot(apiState)
-    listeners.forEach((listener) => listener(currentSnapshot))
+    prevApiState = apiState;
+    currentSnapshot = computeSnapshot(apiState);
+    listeners.forEach((listener) => listener(currentSnapshot));
   }
 
   function start(): void {
-    if (unsubscribe) return
+    if (unsubscribe) return;
     // Compute initial snapshot
-    const apiState = getApiState()
+    const apiState = getApiState();
     if (apiState) {
-      prevApiState = apiState
-      currentSnapshot = computeSnapshot(apiState)
+      prevApiState = apiState;
+      currentSnapshot = computeSnapshot(apiState);
     }
-    unsubscribe = store.subscribe(handleStoreChange)
+    unsubscribe = store.subscribe(handleStoreChange);
   }
 
   function stop(): void {
     if (unsubscribe) {
-      unsubscribe()
-      unsubscribe = null
+      unsubscribe();
+      unsubscribe = null;
     }
     if (throttleTimer) {
-      clearTimeout(throttleTimer)
-      throttleTimer = null
+      clearTimeout(throttleTimer);
+      throttleTimer = null;
     }
-    prevApiState = null
-    cacheTimerTracker.clear()
+    prevApiState = null;
+    cacheTimerTracker.clear();
   }
 
   function getSnapshot(): DevtoolsSnapshot {
-    return currentSnapshot
+    return currentSnapshot;
   }
 
-  function subscribe(listener: (snapshot: DevtoolsSnapshot) => void): () => void {
-    listeners.add(listener)
+  function subscribe(
+    listener: (snapshot: DevtoolsSnapshot) => void,
+  ): () => void {
+    listeners.add(listener);
     return () => {
-      listeners.delete(listener)
-    }
+      listeners.delete(listener);
+    };
   }
 
-  return { start, stop, getSnapshot, subscribe }
+  return { start, stop, getSnapshot, subscribe };
 }
 
 function createEmptySnapshot(): DevtoolsSnapshot {
@@ -321,15 +332,15 @@ function createEmptySnapshot(): DevtoolsSnapshot {
       totalSubscriptions: 0,
     },
     timestamp: Date.now(),
-  }
+  };
 }
 
 function extractEndpointName(cacheKey: string): string {
-  const parenIndex = cacheKey.indexOf('(')
-  return parenIndex > -1 ? cacheKey.slice(0, parenIndex) : cacheKey
+  const parenIndex = cacheKey.indexOf("(");
+  return parenIndex > -1 ? cacheKey.slice(0, parenIndex) : cacheKey;
 }
 
 function parseTagId(id: string): string | number {
-  const num = Number(id)
-  return !isNaN(num) && String(num) === id ? num : id
+  const num = Number(id);
+  return !isNaN(num) && String(num) === id ? num : id;
 }

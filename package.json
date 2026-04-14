@@ -8,16 +8,26 @@
     "dev": "pnpm -r --parallel dev",
     "test": "vitest",
     "test:run": "vitest run",
-    "lint": "eslint packages/*/src/**/*.{ts,tsx}",
+    "lint": "eslint 'packages/*/src/**/*.{ts,tsx}' 'examples/*/src/**/*.{ts,tsx}'",
+    "lint:fix": "eslint --fix 'packages/*/src/**/*.{ts,tsx}' 'examples/*/src/**/*.{ts,tsx}'",
+    "format": "prettier --write 'packages/*/src/**/*.{ts,tsx}' 'examples/*/src/**/*.{ts,tsx}'",
+    "format:check": "prettier --check 'packages/*/src/**/*.{ts,tsx}' 'examples/*/src/**/*.{ts,tsx}'",
     "typecheck": "pnpm -r typecheck",
-    "clean": "pnpm -r clean"
+    "clean": "pnpm -r clean",
+    "prepare": "lefthook install"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@types/node": "^20.11.0",
-    "eslint": "^9.0.0",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^17.5.0",
+    "lefthook": "^2.1.5",
     "prettier": "^3.2.0",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",
+    "typescript-eslint": "^8.58.2",
     "vitest": "^2.0.0"
   },
   "engines": {

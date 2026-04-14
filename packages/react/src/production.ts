@@ -1,4 +1,4 @@
-import type { RTKDevtoolsProps } from './RTKDevtools'
+import type { RTKDevtoolsProps } from "./RTKDevtools";
 
 /**
  * Production no-op component.
@@ -6,5 +6,5 @@ import type { RTKDevtoolsProps } from './RTKDevtools'
  * so production bundlers get an empty module that tree-shakes to zero bytes.
  */
 export function RTKDevtools(_props: RTKDevtoolsProps): null {
-  return null
+  return null;
 }
