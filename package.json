@@ -13,10 +13,15 @@
     "format": "prettier --write 'packages/*/src/**/*.{ts,tsx}' 'examples/*/src/**/*.{ts,tsx}'",
     "format:check": "prettier --check 'packages/*/src/**/*.{ts,tsx}' 'examples/*/src/**/*.{ts,tsx}'",
     "typecheck": "pnpm -r typecheck",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish",
     "clean": "pnpm -r clean",
     "prepare": "lefthook install"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.6.0",
+    "@changesets/cli": "^2.30.0",
     "@eslint/js": "^9.39.4",
     "@types/node": "^20.11.0",
     "eslint": "^9.39.4",
@@ -33,6 +38,14 @@
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/enBonnet/rtk-devtools.git"
+  },
+  "homepage": "https://github.com/enBonnet/rtk-devtools#readme",
+  "bugs": {
+    "url": "https://github.com/enBonnet/rtk-devtools/issues"
   },
   "packageManager": "pnpm@9.15.0"
 }

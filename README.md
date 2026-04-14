@@ -1,3 +1,13 @@
+<p align="center">
+  <a href="https://lilohq.com">
+    <img src="./lilo-logo.svg" alt="Lilo" width="200" />
+  </a>
+  <br />
+  This project couldn't be possible without <a href="https://lilohq.com">lilohq.com</a>.
+</p>
+
+---
+
 # RTK Devtools
 
 Devtools for [Redux Toolkit Query](https://redux-toolkit.js.org/rtk-query/overview). An embeddable panel that gives you deep visibility into RTK Query's cache, subscriptions, tag-based invalidation, and request lifecycle — things the generic Redux DevTools Extension doesn't surface.
@@ -184,17 +194,20 @@ examples/
   basic/         # Vite + React demo app using JSONPlaceholder API
 ```
 
+## Publishing workflow
+
+- 1. When you make changes, create a changeset
+`pnpm changeset`
+
+- 2. When ready to release, bump versions
+`pnpm version-packages`
+
+- 3. Commit the version bumps, then publish
+`pnpm release`
+
 ## Inspiration
 
 This project is inspired by [TanStack DevTools](https://github.com/tanstack/devtools).
-
-## Powered by
-
-<a href="https://lilohq.com">
-  <img src="./lilo-logo.png" alt="Lilo" width="80" />
-</a>
-
-[lilohq.com](https://lilohq.com)
 
 ## License
 

@@ -21,7 +21,9 @@
       }
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -48,5 +50,25 @@
     "react-redux": "^9.1.0",
     "redux": "^5.0.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/enBonnet/rtk-devtools.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/enBonnet/rtk-devtools/tree/main/packages/react#readme",
+  "bugs": {
+    "url": "https://github.com/enBonnet/rtk-devtools/issues"
+  },
+  "keywords": [
+    "redux",
+    "rtk",
+    "redux-toolkit",
+    "devtools",
+    "rtk-query",
+    "react"
+  ],
   "sideEffects": false
 }
