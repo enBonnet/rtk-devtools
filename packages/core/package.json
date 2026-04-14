@@ -2,6 +2,7 @@
   "name": "@rtk-devtools/core",
   "version": "0.1.0",
   "description": "Framework-agnostic core engine for RTK Devtools",
+  "author": "Ender Bonnet (@enBonnet)",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",

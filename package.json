@@ -2,6 +2,7 @@
   "name": "rtk-devtools",
   "private": true,
   "description": "Devtools for Redux Toolkit Query",
+  "author": "Ender Bonnet (@enBonnet)",
   "license": "MIT",
   "scripts": {
     "build": "pnpm -r build",

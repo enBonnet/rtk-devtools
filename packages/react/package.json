@@ -2,6 +2,7 @@
   "name": "@rtk-devtools/react",
   "version": "0.1.0",
   "description": "React adapter for RTK Devtools",
+  "author": "Ender Bonnet (@enBonnet)",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
