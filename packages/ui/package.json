@@ -1,6 +1,6 @@
 {
   "name": "@rtk-devtools/ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "UI components and panels for RTK Devtools",
   "author": "Ender Bonnet (@enBonnet)",
   "license": "MIT",
