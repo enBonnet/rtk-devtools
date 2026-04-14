@@ -2,8 +2,6 @@
 
 Devtools for [Redux Toolkit Query](https://redux-toolkit.js.org/rtk-query/overview). An embeddable panel that gives you deep visibility into RTK Query's cache, subscriptions, tag-based invalidation, and request lifecycle — things the generic Redux DevTools Extension doesn't surface.
 
-Inspired by [TanStack DevTools](https://github.com/tanstack/devtools).
-
 ## Features
 
 - **Queries Panel** — Browse all cached queries with status, timing, subscriber count, and cache expiration countdowns. Master-detail view with full data inspection, filtering, and sorting.
@@ -33,9 +31,9 @@ yarn add @rtk-devtools/react
 
 ```ts
 // store.ts
-import { configureStore } from '@reduxjs/toolkit'
-import { createDevtoolsMiddleware } from '@rtk-devtools/core'
-import { api } from './api'
+import { configureStore } from "@reduxjs/toolkit";
+import { createDevtoolsMiddleware } from "@rtk-devtools/core";
+import { api } from "./api";
 
 export const store = configureStore({
   reducer: {
@@ -45,16 +43,16 @@ export const store = configureStore({
     getDefaultMiddleware()
       .concat(api.middleware)
       .concat(createDevtoolsMiddleware({ api })),
-})
+});
 ```
 
 **2. Render the devtools component:**
 
 ```tsx
 // App.tsx
-import { RTKDevtools } from '@rtk-devtools/react'
-import { api } from './api'
-import { store } from './store'
+import { RTKDevtools } from "@rtk-devtools/react";
+import { api } from "./api";
+import { store } from "./store";
 
 function App() {
   return (
@@ -62,7 +60,7 @@ function App() {
       <YourApp />
       <RTKDevtools api={api} store={store} />
     </>
-  )
+  );
 }
 ```
 
@@ -72,11 +70,11 @@ That's it. Click the **RTK** button in the bottom-right corner to open the panel
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
+| Package               | Description                                                                                   |
+| --------------------- | --------------------------------------------------------------------------------------------- |
 | `@rtk-devtools/react` | React component (`<RTKDevtools />`) with floating panel — **this is what most users install** |
-| `@rtk-devtools/core` | Framework-agnostic core: store observation, event recording, tag graph building |
-| `@rtk-devtools/ui` | Shared React UI components and panels (used internally by `@rtk-devtools/react`) |
+| `@rtk-devtools/core`  | Framework-agnostic core: store observation, event recording, tag graph building               |
+| `@rtk-devtools/ui`    | Shared React UI components and panels (used internally by `@rtk-devtools/react`)              |
 
 ## API Reference
 
@@ -86,15 +84,15 @@ The main component. Renders a toggle button and a floating devtools panel.
 
 ```tsx
 <RTKDevtools
-  api={api}                        // Required — your createApi() instance
-  store={store}                    // Optional — auto-detected from react-redux
-  initialOpen={false}              // Optional — start with panel open
-  buttonPosition="bottom-right"   // Optional — toggle button placement
-  position="bottom"                // Optional — panel dock position: top | bottom | left | right
-  panelSize={400}                  // Optional — panel height/width in px
-  theme="dark"                     // Optional — light | dark | system
-  maxTimelineEvents={500}          // Optional — timeline buffer size
-  disabled={false}                 // Optional — force disable (auto-disabled in production)
+  api={api} // Required — your createApi() instance
+  store={store} // Optional — auto-detected from react-redux
+  initialOpen={false} // Optional — start with panel open
+  buttonPosition="bottom-right" // Optional — toggle button placement
+  position="bottom" // Optional — panel dock position: top | bottom | left | right
+  panelSize={400} // Optional — panel height/width in px
+  theme="dark" // Optional — light | dark | system
+  maxTimelineEvents={500} // Optional — timeline buffer size
+  disabled={false} // Optional — force disable (auto-disabled in production)
 />
 ```
 
@@ -103,7 +101,7 @@ The main component. Renders a toggle button and a floating devtools panel.
 Optional Redux middleware that intercepts RTK Query actions to record timeline events. Purely observational — it never modifies actions or state.
 
 ```ts
-import { createDevtoolsMiddleware } from '@rtk-devtools/core'
+import { createDevtoolsMiddleware } from "@rtk-devtools/core";
 ```
 
 Without this middleware, the Queries, Mutations, Tags, and Subscriptions panels still work (they read directly from the Redux store). Only the Timeline panel requires the middleware.
@@ -113,17 +111,17 @@ Without this middleware, the Queries, Mutations, Tags, and Subscriptions panels 
 Lower-level API for creating a devtools instance manually. Useful if you want to build a custom UI or integrate with other tools.
 
 ```ts
-import { createRTKDevtools } from '@rtk-devtools/core'
+import { createRTKDevtools } from "@rtk-devtools/core";
 
-const devtools = createRTKDevtools({ api, store })
-devtools.start()
+const devtools = createRTKDevtools({ api, store });
+devtools.start();
 
 // Subscribe to snapshot changes
 devtools.subscribe((snapshot) => {
-  console.log(snapshot.stats)
-  console.log(snapshot.queries)
-  console.log(snapshot.tagGraph)
-})
+  console.log(snapshot.stats);
+  console.log(snapshot.queries);
+  console.log(snapshot.tagGraph);
+});
 ```
 
 ### React Hooks
@@ -131,10 +129,10 @@ devtools.subscribe((snapshot) => {
 Available when inside an `<RTKDevtoolsProvider>` (automatically set up by `<RTKDevtools />`):
 
 ```ts
-import { useDevtoolsSnapshot, useDevtools } from '@rtk-devtools/react'
+import { useDevtoolsSnapshot, useDevtools } from "@rtk-devtools/react";
 
-const snapshot = useDevtoolsSnapshot()  // Current devtools snapshot (queries, mutations, tags, etc.)
-const devtools = useDevtools()          // The RTKDevtoolsInstance for actions like refetch
+const snapshot = useDevtoolsSnapshot(); // Current devtools snapshot (queries, mutations, tags, etc.)
+const devtools = useDevtools(); // The RTKDevtoolsInstance for actions like refetch
 ```
 
 ## Keyboard Shortcut
@@ -185,6 +183,18 @@ packages/
 examples/
   basic/         # Vite + React demo app using JSONPlaceholder API
 ```
+
+## Inspiration
+
+This project is inspired by [TanStack DevTools](https://github.com/tanstack/devtools).
+
+## Powered by
+
+<a href="https://lilohq.com">
+  <img src="./lilo-logo.png" alt="Lilo" width="80" />
+</a>
+
+[lilohq.com](https://lilohq.com)
 
 ## License
 

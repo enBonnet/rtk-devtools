@@ -2,12 +2,15 @@ pre-commit:
   parallel: true
   jobs:
     - name: lint
-      glob: "*.{ts,tsx}"
+      glob: "**/*.{ts,tsx}"
+      exclude: "(dist|node_modules)"
       run: pnpm eslint {staged_files}
 
-    - name: format check
-      glob: "*.{ts,tsx,json,md,yml,yaml}"
-      run: pnpm prettier --check {staged_files}
+    - name: format
+      glob: "**/*.{ts,tsx,json,md,yml,yaml}"
+      exclude: "(dist|node_modules|pnpm-lock\\.yaml)"
+      stage_fixed: true
+      run: pnpm prettier --write --ignore-unknown {staged_files}
 
     - name: typecheck
       run: pnpm typecheck
