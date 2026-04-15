@@ -1,4 +1,10 @@
-import { createElement, useState, useCallback, useEffect } from "react";
+import {
+  createElement,
+  useState,
+  useCallback,
+  useEffect,
+  useSyncExternalStore,
+} from "react";
 import { setup } from "goober";
 import type { RTKQueryApi } from "@rtk-devtools/core";
 import {
@@ -23,6 +29,22 @@ import type { Store } from "redux";
 
 // Initialize goober
 setup(createElement);
+
+const emptySubscribe = () => () => {};
+
+/**
+ * SSR-safe hook that returns false on the server and during hydration,
+ * then true after the first client render. This ensures the devtools
+ * never render during SSR, avoiding hydration mismatches with frameworks
+ * like Next.js, Remix, or Gatsby.
+ */
+function useIsClient(): boolean {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+}
 
 export interface RTKDevtoolsProps {
   /** The RTK Query API instance created by createApi() */
@@ -59,13 +81,14 @@ export function RTKDevtools({
   disabled,
 }: RTKDevtoolsProps) {
   // Hooks must be called unconditionally before any early returns
+  const isClient = useIsClient();
   const reduxStore = useReduxStore();
 
   // Production bailout
   const isDisabled =
     disabled ??
     (typeof process !== "undefined" && process.env?.NODE_ENV === "production");
-  if (isDisabled) return null;
+  if (!isClient || isDisabled) return null;
 
   // Try to get store from react-redux context if not passed
   const store = storeProp ?? reduxStore;
