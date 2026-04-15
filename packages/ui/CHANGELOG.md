@@ -1,5 +1,16 @@
 # @rtk-devtools/ui
 
+## 0.4.0
+
+### Minor Changes
+
+- 4490b0e: Export core api via react lib
+
+### Patch Changes
+
+- Updated dependencies [4490b0e]
+  - @rtk-devtools/core@0.4.0
+
 ## 0.3.1
 
 ### Patch Changes

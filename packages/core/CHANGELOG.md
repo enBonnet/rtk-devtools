@@ -1,5 +1,11 @@
 # @rtk-devtools/core
 
+## 0.4.0
+
+### Minor Changes
+
+- 4490b0e: Export core api via react lib
+
 ## 0.3.1
 
 ### Patch Changes
