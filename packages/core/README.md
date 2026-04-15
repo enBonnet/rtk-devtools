@@ -10,7 +10,13 @@
 
 # @rtk-devtools/core
 
-Framework-agnostic core engine for RTK Devtools. Provides store observation, event recording, tag graph building, and the optional Redux middleware for timeline tracking.
+Framework-agnostic core engine for RTK Devtools. Handles store observation, snapshot generation, event recording, tag graph building, and the optional Redux middleware for timeline tracking.
+
+This package is part of [RTK Devtools](https://github.com/enBonnet/rtk-devtools). For the full devtools experience, install all three packages:
+
+```bash
+npm install @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
+```
 
 ## Install
 
@@ -20,11 +26,11 @@ npm install @rtk-devtools/core
 pnpm add @rtk-devtools/core
 ```
 
-## Usage
+## API
 
-### Devtools Middleware (Timeline)
+### `createDevtoolsMiddleware({ api })`
 
-Add the middleware to record RTK Query actions into a timeline:
+Redux middleware that intercepts RTK Query actions to record timeline events. Purely observational — it never modifies actions or state. Without this middleware, the Queries, Mutations, Tags, and Subscriptions panels still work (they read directly from the Redux store). Only the Timeline panel requires it.
 
 ```ts
 import { configureStore } from "@reduxjs/toolkit";
@@ -42,9 +48,33 @@ export const store = configureStore({
 });
 ```
 
-### Devtools Instance (Lower-level API)
+The returned middleware also exposes a `connectRecorder(recorder)` method to integrate with a devtools instance's event recorder.
 
-Create a devtools instance manually for custom UIs or integrations:
+### `createRTKDevtools(config)`
+
+Create a devtools instance that observes the Redux store and produces snapshots of RTK Query state. Useful for building custom UIs or integrating with other tools.
+
+**Config options:**
+
+| Option              | Type          | Default    | Description                                   |
+| ------------------- | ------------- | ---------- | --------------------------------------------- |
+| `api`               | `RTKQueryApi` | _required_ | The RTK Query API instance from `createApi()` |
+| `store`             | `Store`       | _required_ | The Redux store                               |
+| `maxTimelineEvents` | `number`      | `500`      | Maximum timeline events to retain             |
+| `throttleMs`        | `number`      | `100`      | Throttle interval for snapshot updates in ms  |
+
+**Instance methods:**
+
+| Method                                 | Description                                                    |
+| -------------------------------------- | -------------------------------------------------------------- |
+| `getSnapshot()`                        | Returns the current `DevtoolsSnapshot`                         |
+| `subscribe(listener)`                  | Subscribe to snapshot changes. Returns an unsubscribe function |
+| `start()`                              | Start observing the store                                      |
+| `stop()`                               | Stop observing the store                                       |
+| `clearTimeline()`                      | Clear all recorded timeline events                             |
+| `getEndpoints()`                       | Get API endpoint definitions (name, type, tag types)           |
+| `refetchQuery(endpointName, args)`     | Dispatch a refetch for a query                                 |
+| `removeCacheEntry(endpointName, args)` | Remove a query cache entry                                     |
 
 ```ts
 import { createRTKDevtools } from "@rtk-devtools/core";
@@ -59,11 +89,9 @@ devtools.subscribe((snapshot) => {
 });
 ```
 
-## Exports
+### Exported Types
 
-- `createRTKDevtools(config)` — Create a devtools instance
-- `createDevtoolsMiddleware(config)` — Create the Redux middleware for timeline event recording
-- All TypeScript types (`RTKDevtoolsConfig`, `DevtoolsSnapshot`, `TimelineEvent`, etc.)
+`RTKDevtoolsConfig`, `RTKDevtoolsInstance`, `DevtoolsSnapshot`, `DevtoolsStats`, `DevtoolsQueryEntry`, `DevtoolsMutationEntry`, `TagDescription`, `TagNode`, `TimelineEvent`, `TimelineEventType`, `TimelineEventFilter`, `ApiEndpointInfo`, `QueryStatus`, `EventRecorderInstance`, `RTKQueryApi`, `DevtoolsMiddlewareConfig`
 
 ## Peer Dependencies
 

@@ -27,12 +27,14 @@ Devtools for [Redux Toolkit Query](https://redux-toolkit.js.org/rtk-query/overvi
 
 ### Install
 
+RTK Devtools is split into three packages. Install all three:
+
 ```bash
-npm install @rtk-devtools/react
+npm install @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
 # or
-pnpm add @rtk-devtools/react
+pnpm add @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
 # or
-yarn add @rtk-devtools/react
+yarn add @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
 ```
 
 ### Setup
@@ -80,70 +82,39 @@ That's it. Click the **RTK** button in the bottom-right corner to open the panel
 
 ## Packages
 
-| Package               | Description                                                                                   |
-| --------------------- | --------------------------------------------------------------------------------------------- |
-| `@rtk-devtools/react` | React component (`<RTKDevtools />`) with floating panel — **this is what most users install** |
-| `@rtk-devtools/core`  | Framework-agnostic core: store observation, event recording, tag graph building               |
-| `@rtk-devtools/ui`    | Shared React UI components and panels (used internally by `@rtk-devtools/react`)              |
+RTK Devtools is organized into three packages, each with a specific responsibility:
 
-## API Reference
+### `@rtk-devtools/core`
 
-### `<RTKDevtools />`
+Framework-agnostic core engine. Handles store observation, snapshot generation, event recording, tag graph building, and the optional Redux middleware for timeline tracking.
 
-The main component. Renders a toggle button and a floating devtools panel.
+**Main exports:**
 
-```tsx
-<RTKDevtools
-  api={api} // Required — your createApi() instance
-  store={store} // Optional — auto-detected from react-redux
-  initialOpen={false} // Optional — start with panel open
-  buttonPosition="bottom-right" // Optional — toggle button placement
-  position="bottom" // Optional — panel dock position: top | bottom | left | right
-  panelSize={400} // Optional — panel height/width in px
-  theme="dark" // Optional — light | dark | system
-  maxTimelineEvents={500} // Optional — timeline buffer size
-  disabled={false} // Optional — force disable (auto-disabled in production)
-/>
-```
+- `createRTKDevtools(config)` — Create a devtools instance that observes the Redux store and produces snapshots of RTK Query state (queries, mutations, tags, subscriptions, timeline).
+- `createDevtoolsMiddleware({ api })` — Redux middleware that intercepts RTK Query actions to record timeline events. Purely observational — never modifies actions or state.
+- TypeScript types: `RTKDevtoolsConfig`, `RTKDevtoolsInstance`, `DevtoolsSnapshot`, `DevtoolsQueryEntry`, `DevtoolsMutationEntry`, `TagNode`, `TimelineEvent`, and more.
 
-### `createDevtoolsMiddleware({ api })`
+### `@rtk-devtools/ui`
 
-Optional Redux middleware that intercepts RTK Query actions to record timeline events. Purely observational — it never modifies actions or state.
+React UI components and panels. Provides the themed panel views and reusable components used by `@rtk-devtools/react`.
 
-```ts
-import { createDevtoolsMiddleware } from "@rtk-devtools/core";
-```
+**Panels:** `QueriesPanel`, `MutationsPanel`, `TagsPanel`, `SubscriptionsPanel`, `TimelinePanel`
 
-Without this middleware, the Queries, Mutations, Tags, and Subscriptions panels still work (they read directly from the Redux store). Only the Timeline panel requires the middleware.
+**Components:** `StatusBadge`, `TagChip`, `CacheKeyDisplay`, `DataExplorer`, `PanelTabs`, `SearchFilter`, `TimeAgo`, `TimingBar`
 
-### `createRTKDevtools(config)`
+**Theme:** `DevtoolsThemeProvider`, `lightTheme`, `darkTheme`, `useTheme`
 
-Lower-level API for creating a devtools instance manually. Useful if you want to build a custom UI or integrate with other tools.
+### `@rtk-devtools/react`
 
-```ts
-import { createRTKDevtools } from "@rtk-devtools/core";
+React adapter — **this is the main package most users interact with**. Provides the `<RTKDevtools />` component (floating panel, toggle button, keyboard shortcut) and React hooks for accessing devtools state.
 
-const devtools = createRTKDevtools({ api, store });
-devtools.start();
+**Main exports:**
 
-// Subscribe to snapshot changes
-devtools.subscribe((snapshot) => {
-  console.log(snapshot.stats);
-  console.log(snapshot.queries);
-  console.log(snapshot.tagGraph);
-});
-```
-
-### React Hooks
-
-Available when inside an `<RTKDevtoolsProvider>` (automatically set up by `<RTKDevtools />`):
-
-```ts
-import { useDevtoolsSnapshot, useDevtools } from "@rtk-devtools/react";
-
-const snapshot = useDevtoolsSnapshot(); // Current devtools snapshot (queries, mutations, tags, etc.)
-const devtools = useDevtools(); // The RTKDevtoolsInstance for actions like refetch
-```
+- `<RTKDevtools />` — The main component. Renders a toggle button and a floating, resizable devtools panel.
+- `<RTKDevtoolsProvider>` — Context provider (automatically set up by `<RTKDevtools />`). Use directly if building a custom UI.
+- `useDevtoolsSnapshot()` — Returns the current `DevtoolsSnapshot` (queries, mutations, tags, timeline, stats).
+- `useDevtools()` — Returns the `RTKDevtoolsInstance` for actions like `refetchQuery` and `clearTimeline`.
+- `useDevtoolsContext()` — Returns both the instance and snapshot.
 
 ## Keyboard Shortcut
 
