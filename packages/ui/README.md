@@ -12,13 +12,13 @@
 
 Shared React UI components and panels for RTK Devtools. This package provides the themed panel views and reusable components used by `@rtk-devtools/react`.
 
-This package is part of [RTK Devtools](https://github.com/enBonnet/rtk-devtools). For the full devtools experience, install all three packages:
+This package is part of [RTK Devtools](https://github.com/enBonnet/rtk-devtools).
 
-```bash
-npm install @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
-```
+> **For most users:** You don't need to install this package directly. Install `@rtk-devtools/react` instead — it includes this package as a dependency.
 
 ## Install
+
+If you need the UI components standalone (e.g., for building a custom devtools layout):
 
 ```bash
 npm install @rtk-devtools/ui

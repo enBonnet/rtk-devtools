@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { createDevtoolsMiddleware } from "@rtk-devtools/core";
+import { createDevtoolsMiddleware } from "@rtk-devtools/react";
 import { api } from "./api";
 
 export const store = configureStore({

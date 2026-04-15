@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.0",
-    "@rtk-devtools/core": "workspace:*",
     "@rtk-devtools/react": "workspace:*",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",

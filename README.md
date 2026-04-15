@@ -27,15 +27,15 @@ Devtools for [Redux Toolkit Query](https://redux-toolkit.js.org/rtk-query/overvi
 
 ### Install
 
-RTK Devtools is split into three packages. Install all three:
-
 ```bash
-npm install @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
+npm install @rtk-devtools/react
 # or
-pnpm add @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
+pnpm add @rtk-devtools/react
 # or
-yarn add @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
+yarn add @rtk-devtools/react
 ```
+
+This single package includes `@rtk-devtools/core` and `@rtk-devtools/ui` as dependencies — no need to install them separately.
 
 ### Setup
 
@@ -44,7 +44,7 @@ yarn add @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
 ```ts
 // store.ts
 import { configureStore } from "@reduxjs/toolkit";
-import { createDevtoolsMiddleware } from "@rtk-devtools/core";
+import { createDevtoolsMiddleware } from "@rtk-devtools/react";
 import { api } from "./api";
 
 export const store = configureStore({
@@ -80,41 +80,33 @@ That's it. Click the **RTK** button in the bottom-right corner to open the panel
 
 > If your app already has a `<Provider store={store}>`, you can omit the `store` prop — it will be auto-detected from the React-Redux context.
 
-## Packages
+## Exports
 
-RTK Devtools is organized into three packages, each with a specific responsibility:
+`@rtk-devtools/react` re-exports the full public API from all packages, so you only need a single import source:
 
-### `@rtk-devtools/core`
-
-Framework-agnostic core engine. Handles store observation, snapshot generation, event recording, tag graph building, and the optional Redux middleware for timeline tracking.
-
-**Main exports:**
-
-- `createRTKDevtools(config)` — Create a devtools instance that observes the Redux store and produces snapshots of RTK Query state (queries, mutations, tags, subscriptions, timeline).
-- `createDevtoolsMiddleware({ api })` — Redux middleware that intercepts RTK Query actions to record timeline events. Purely observational — never modifies actions or state.
-- TypeScript types: `RTKDevtoolsConfig`, `RTKDevtoolsInstance`, `DevtoolsSnapshot`, `DevtoolsQueryEntry`, `DevtoolsMutationEntry`, `TagNode`, `TimelineEvent`, and more.
-
-### `@rtk-devtools/ui`
-
-React UI components and panels. Provides the themed panel views and reusable components used by `@rtk-devtools/react`.
-
-**Panels:** `QueriesPanel`, `MutationsPanel`, `TagsPanel`, `SubscriptionsPanel`, `TimelinePanel`
-
-**Components:** `StatusBadge`, `TagChip`, `CacheKeyDisplay`, `DataExplorer`, `PanelTabs`, `SearchFilter`, `TimeAgo`, `TimingBar`
-
-**Theme:** `DevtoolsThemeProvider`, `lightTheme`, `darkTheme`, `useTheme`
-
-### `@rtk-devtools/react`
-
-React adapter — **this is the main package most users interact with**. Provides the `<RTKDevtools />` component (floating panel, toggle button, keyboard shortcut) and React hooks for accessing devtools state.
-
-**Main exports:**
+**React components and hooks:**
 
 - `<RTKDevtools />` — The main component. Renders a toggle button and a floating, resizable devtools panel.
 - `<RTKDevtoolsProvider>` — Context provider (automatically set up by `<RTKDevtools />`). Use directly if building a custom UI.
 - `useDevtoolsSnapshot()` — Returns the current `DevtoolsSnapshot` (queries, mutations, tags, timeline, stats).
 - `useDevtools()` — Returns the `RTKDevtoolsInstance` for actions like `refetchQuery` and `clearTimeline`.
 - `useDevtoolsContext()` — Returns both the instance and snapshot.
+
+**Core engine (re-exported from `@rtk-devtools/core`):**
+
+- `createRTKDevtools(config)` — Create a devtools instance that observes the Redux store and produces snapshots of RTK Query state.
+- `createDevtoolsMiddleware({ api })` — Redux middleware that intercepts RTK Query actions to record timeline events. Purely observational — never modifies actions or state.
+- TypeScript types: `RTKDevtoolsConfig`, `RTKDevtoolsInstance`, `DevtoolsSnapshot`, `DevtoolsQueryEntry`, `DevtoolsMutationEntry`, `TagNode`, `TimelineEvent`, and more.
+
+## Packages
+
+Under the hood, RTK Devtools is organized into three packages. You can import from them directly if you only need a subset:
+
+| Package | Description |
+|---|---|
+| `@rtk-devtools/core` | Framework-agnostic core engine: store observation, snapshot generation, event recording, tag graph, middleware |
+| `@rtk-devtools/ui` | React UI panels and shared components with theme system |
+| `@rtk-devtools/react` | React adapter — the main entry point. Includes core + ui as dependencies |
 
 ## Keyboard Shortcut
 

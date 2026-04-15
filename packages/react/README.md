@@ -12,14 +12,14 @@
 
 React adapter for RTK Devtools. This is the main package most users interact with. It provides the `<RTKDevtools />` component — a floating, resizable panel that gives you deep visibility into RTK Query's cache, subscriptions, tag-based invalidation, and request lifecycle.
 
-This package is part of [RTK Devtools](https://github.com/enBonnet/rtk-devtools). For the full devtools experience, install all three packages:
+This package is part of [RTK Devtools](https://github.com/enBonnet/rtk-devtools). It includes `@rtk-devtools/core` and `@rtk-devtools/ui` as dependencies and re-exports their public API, so this is the only package you need to install:
 
 ```bash
-npm install @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
+npm install @rtk-devtools/react
 # or
-pnpm add @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
+pnpm add @rtk-devtools/react
 # or
-yarn add @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
+yarn add @rtk-devtools/react
 ```
 
 ## Quick Start
@@ -29,7 +29,7 @@ yarn add @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
 ```ts
 // store.ts
 import { configureStore } from "@reduxjs/toolkit";
-import { createDevtoolsMiddleware } from "@rtk-devtools/core";
+import { createDevtoolsMiddleware } from "@rtk-devtools/react";
 import { api } from "./api";
 
 export const store = configureStore({
@@ -135,6 +135,21 @@ function CustomDevtools() {
 - Production-safe — tree-shakes to zero bytes in production builds
 - Dark/Light/System theme support
 - Keyboard shortcut: **Ctrl+Shift+R** to toggle
+
+## Re-exported Core API
+
+`@rtk-devtools/react` re-exports the full public API from `@rtk-devtools/core`, so you can import everything from a single package:
+
+```ts
+import {
+  createDevtoolsMiddleware,
+  createRTKDevtools,
+  RTKDevtools,
+  useDevtoolsSnapshot,
+} from "@rtk-devtools/react";
+```
+
+See the [`@rtk-devtools/core` README](../core/README.md) for full documentation of `createRTKDevtools` and `createDevtoolsMiddleware`.
 
 ## Peer Dependencies
 

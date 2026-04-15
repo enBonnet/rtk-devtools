@@ -12,13 +12,13 @@
 
 Framework-agnostic core engine for RTK Devtools. Handles store observation, snapshot generation, event recording, tag graph building, and the optional Redux middleware for timeline tracking.
 
-This package is part of [RTK Devtools](https://github.com/enBonnet/rtk-devtools). For the full devtools experience, install all three packages:
+This package is part of [RTK Devtools](https://github.com/enBonnet/rtk-devtools).
 
-```bash
-npm install @rtk-devtools/core @rtk-devtools/ui @rtk-devtools/react
-```
+> **For React users:** You don't need to install this package directly. Install `@rtk-devtools/react` instead — it includes this package as a dependency and re-exports its full public API.
 
 ## Install
+
+If you need the core engine without the React adapter (e.g., for a non-React integration):
 
 ```bash
 npm install @rtk-devtools/core
@@ -34,7 +34,7 @@ Redux middleware that intercepts RTK Query actions to record timeline events. Pu
 
 ```ts
 import { configureStore } from "@reduxjs/toolkit";
-import { createDevtoolsMiddleware } from "@rtk-devtools/core";
+import { createDevtoolsMiddleware } from "@rtk-devtools/core"; // or from "@rtk-devtools/react"
 import { api } from "./api";
 
 export const store = configureStore({
