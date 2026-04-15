@@ -209,6 +209,7 @@ function DevtoolsUI({
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={setActiveTab}
+          onClose={toggleOpen}
         />
         <div style={{ flex: 1, overflow: "hidden" }}>
           {activeTab === "queries" && (
