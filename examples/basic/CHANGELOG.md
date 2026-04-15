@@ -1,5 +1,13 @@
 # rtk-devtools-example
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [2d81396]
+  - @rtk-devtools/core@0.3.1
+  - @rtk-devtools/react@0.3.1
+
 ## 0.0.2
 
 ### Patch Changes
